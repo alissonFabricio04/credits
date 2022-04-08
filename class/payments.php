@@ -125,17 +125,29 @@ function initialize_gateway_class() {
                 wc_add_notice(  'insufficient credits', 'error' );
                 return;
             } else if ($total <= $this->credits->get_total()) {
+                $body = wp_json_encode( $body = ['total' => $total]);
+                $response = wp_remote_post( 'http://localhost:3333/list', $body );
+
+                $this->credits->update_total($total - $this->credits->get_total());
                 wc_add_notice(  'compra concluida', 'success' );
+                $order->payment_complete();
+                $order->reduce_order_stock();
+                $order->add_order_note( 'Hey, your order is paid! Thank you!', true );
+                $order->add_order_note( 'This private note shows only on order edit page', false );
+    
+                // empty cart
+                $woocommerce->cart->empty_cart();
+    
+                // redirect to the thank you page
+                return array(
+                    'result' => 'success',
+                    'redirect' => $this->get_return_url( $order )
+                );
                 return;
             } else {
                 wc_add_notice(  'Erro inesperado', 'error' );
                 return;
             }
-        
-            // Array with arguments for API interaction
-            $body = wp_json_encode( $body = ['total' => $total]);
-            
-            $response = wp_remote_post( 'http://localhost:3333/list', $body );
         }
     }
 }

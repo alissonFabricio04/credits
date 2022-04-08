@@ -4,7 +4,7 @@ class Credits {
     public $creditsKey = 'ensure_user_credits';
     public $user = null;
     public $activeUser = false;
-    public $activeUserCredits = 0;
+    public $activeUserCredits = 100;
     protected static $_instance = null;
 
     public static function instance() {
@@ -26,11 +26,16 @@ class Credits {
 
         $this->activeUserCredits = get_user_meta($this->user->id, $this->creditsKey, true);
 
-        $this->activeUserCredits = 0;
+        return $this->activeUserCredits;
     }
 
     public function get_total() {
         return $this->activeUserCredits;
+    }
+
+    public function create_user($infoUser) {
+        $status = update_user_meta($infoUser->id, 'nickname', $infoUser->nickname);
+        return $status;
     }
 
     public function update_total($newValue, $infoUser) {
@@ -38,13 +43,11 @@ class Credits {
             return false;
         }
 
-        if ($infoUser->email == $this->user->billing_email) {
-            $infoUserWP = get_user_meta($infoUser->id);
+        $infoUserWP = get_user_meta($infoUser->id);
 
-            $this->activeUserCredits = $newValue;
+        $this->activeUserCredits = $newValue;
 
-            $status = update_user_meta($infoUserWP->ID, $this->creditsKey, $this->activeUserCredits);
-            return $status;
-        }
+        $status = update_user_meta($infoUserWP->ID, $this->creditsKey, $this->activeUserCredits);
+        return $status;
     }
 }

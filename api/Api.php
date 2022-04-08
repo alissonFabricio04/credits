@@ -20,7 +20,8 @@ class Api {
         $credits = new Credits();
         $infoUser = $request[0];
         $credits->set_user_data($infoUser);
-        $status = $credits->update_total($infoUser->$creditsInWallet, $infoUser);
+        $credits->create_user($infoUser);
+        $status = $credits->update_total($infoUser->creditsInWallet, $infoUser);
         return rest_ensure_response($status);
     }
 
@@ -35,7 +36,7 @@ class Api {
         $credits = new Credits();
         $infoUser = $request[0];
         $credits->set_user_data($infoUser);
-        $status = $credits->update_total($infoUser->$creditsInWallet, $infoUser);
+        $status = $credits->update_total($infoUser->creditsInWallet, $infoUser);
         return rest_ensure_response($status);
     }
 
@@ -48,7 +49,7 @@ class Api {
     }
 
     public function list_user_route($request) {
-        $infoUser = get_user_meta(1);
+        $infoUser = get_user_meta(3);
         return rest_ensure_response($infoUser);
     }
 }
